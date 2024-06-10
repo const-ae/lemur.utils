@@ -17,7 +17,7 @@ test_that("conversion to matrix works", {
 
 test_that("conversion to long data", {
   nei <- make_dummy_neighborhoods_data.frame()
-  df <- neighborhood_to_long_data(nei, only_keep_inside = FALSE, verbose = FALSE)
+  df <- neighborhoods_to_long_data(nei, only_keep_inside = FALSE, verbose = FALSE)
   expect_true(tibble::is_tibble(df))
   expect_equal(nrow(df), 10 * 100)
   expect_equal(colnames(df), c("name", "cell", "inside"))

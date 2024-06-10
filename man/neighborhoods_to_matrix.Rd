@@ -2,7 +2,7 @@
 % Please edit documentation in R/neighborhoods_utils.R
 \name{neighborhoods_to_matrix}
 \alias{neighborhoods_to_matrix}
-\alias{neighborhood_to_long_data}
+\alias{neighborhoods_to_long_data}
 \title{Convert neighborhood column to other format}
 \usage{
 neighborhoods_to_matrix(
@@ -15,7 +15,7 @@ neighborhoods_to_matrix(
   verbose = TRUE
 )
 
-neighborhood_to_long_data(
+neighborhoods_to_long_data(
   data,
   fit = NULL,
   cell_names = NULL,
@@ -47,11 +47,11 @@ outside the neighborhood for each gene.}
 }
 \value{
 \describe{
-\item{\code{neighborhoods_to_matrix()}}{a (sparse) matrix with \code{length(data[[neighborhood_column_name]])} rows and one
-column for each element of \code{cell_names} (or the set of all cell labels occurring in
-\code{data[[neighborhood_column_name]]}).}
-\item{\code{neighborhood_to_long_data()}}{a \code{tibble} with three columns: \emph{name}, \emph{cell}, and
-\emph{inside}.}
+\item{\code{neighborhoods_to_matrix()}}{a (sparse) matrix with \code{length(data[[neighborhood_column_name]])}
+rows and one column for each element of \code{cell_names} (or the set of all cell labels
+occurring in \code{data[[neighborhood_column_name]]}).}
+\item{\code{neighborhood_to_long_data()}}{a \code{tibble} with three columns: \emph{name}, \emph{cell},
+and \emph{inside}.}
 }
 \description{
 Convert neighborhood column to other format

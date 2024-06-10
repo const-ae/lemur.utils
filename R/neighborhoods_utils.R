@@ -19,14 +19,12 @@ neighborhoods_intersect <- function(){
 #'   outside the neighborhood for each gene.
 #' @param verbose indicator if additional messages are printed.
 #'
-#' @returns
-#'
-#' \describe{
-#' \item{`neighborhoods_to_matrix()`}{a (sparse) matrix with `length(data[[neighborhood_column_name]])` rows and one
-#'  column for each element of `cell_names` (or the set of all cell labels occurring in
-#'  `data[[neighborhood_column_name]]`).}
-#' \item{`neighborhood_to_long_data()`}{a `tibble` with three columns: _name_, _cell_, and
-#'  _inside_.}
+#' @returns \describe{
+#' \item{`neighborhoods_to_matrix()`}{a (sparse) matrix with `length(data[[neighborhood_column_name]])`
+#'  rows and one column for each element of `cell_names` (or the set of all cell labels
+#'  occurring in `data[[neighborhood_column_name]]`).}
+#' \item{`neighborhood_to_long_data()`}{a `tibble` with three columns: _name_, _cell_,
+#'  and _inside_.}
 #'
 #'
 #'
@@ -58,7 +56,7 @@ neighborhoods_to_matrix <- function(data, fit = NULL, cell_names = NULL,
 }
 
 #' @rdname neighborhoods_to_matrix
-neighborhood_to_long_data <- function(data, fit = NULL, cell_names = NULL,
+neighborhoods_to_long_data <- function(data, fit = NULL, cell_names = NULL,
                                       neighborhood_column_name = "neighborhood",
                                       id_column_name = "name",
                                       only_keep_inside = FALSE,
