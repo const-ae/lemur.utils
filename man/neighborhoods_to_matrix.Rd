@@ -2,6 +2,7 @@
 % Please edit documentation in R/neighborhoods_utils.R
 \name{neighborhoods_to_matrix}
 \alias{neighborhoods_to_matrix}
+\alias{neighborhood_to_long_data}
 \title{Convert neighborhood column to other format}
 \usage{
 neighborhoods_to_matrix(
@@ -13,29 +14,44 @@ neighborhoods_to_matrix(
   return_sparse = TRUE,
   verbose = TRUE
 )
+
+neighborhood_to_long_data(
+  data,
+  fit = NULL,
+  cell_names = NULL,
+  neighborhood_column_name = "neighborhood",
+  id_column_name = "name",
+  only_keep_inside = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
-\item{data}{the 'neighborhood' column from the output of `lemur::find_de_neighborhoods`
-or the full data.frame}
+\item{data}{the output of \code{lemur::find_de_neighborhoods}}
 
-\item{fit}{the `lemur_fit` object (optional). The column names of fit are used
+\item{fit}{the \code{lemur_fit} object (optional). The column names of fit are used
 as the set of possible values in the neighborhood columns.}
 
 \item{cell_names}{a character vector with the set of possible values
 in the neighborhood columns.}
 
-\item{neighborhood_column_name, id_column_name}{if `data` is a data.frame,
-these identifiers are used to extract the relevant columns}
+\item{neighborhood_column_name, id_column_name}{the identifiers used to extract
+the relevant neighborhood and gene name column from \code{data}.}
 
-\item{return_sparse}{if `TRUE` a `dgCMatrix` is returned. Otherwise a regular
+\item{return_sparse}{if \code{TRUE} a \code{dgCMatrix} is returned. Otherwise a regular
 dense matrix is returned.}
 
 \item{verbose}{indicator if additional messages are printed.}
+
+\item{only_keep_inside}{return the data after filtering out the cell
+outside the neighborhood for each gene.}
 }
 \value{
-a (sparse) matrix with `length(data)` rows (assuming  `data` is the neighborhood
-  column) and one column for each element of `cell_names` (or the set of all cell labels
-  occurring in `data`).
+\describe{
+\item{\code{neighborhoods_to_matrix()}}{a (sparse) matrix with \code{length(data[[neighborhood_column_name]])} rows and one
+column for each element of \code{cell_names} (or the set of all cell labels occurring in
+\code{data[[neighborhood_column_name]]}).}
+\item{\code{neighborhood_to_long_data()}}{a \code{tibble} with three columns: \emph{name}, \emph{cell}, and
+\emph{inside}.}
 }
 \description{
 Convert neighborhood column to other format

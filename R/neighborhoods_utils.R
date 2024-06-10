@@ -15,11 +15,20 @@ neighborhoods_intersect <- function(){
 #'   the relevant neighborhood and gene name column from `data`.
 #' @param return_sparse if `TRUE` a `dgCMatrix` is returned. Otherwise a regular
 #'   dense matrix is returned.
+#' @param only_keep_inside return the data after filtering out the cell
+#'   outside the neighborhood for each gene.
 #' @param verbose indicator if additional messages are printed.
 #'
-#' @returns a (sparse) matrix with `length(data[[neighborhood_column_name]])` rows and one
+#' @returns
+#'
+#' \describe{
+#' \item{`neighborhoods_to_matrix()`}{a (sparse) matrix with `length(data[[neighborhood_column_name]])` rows and one
 #'  column for each element of `cell_names` (or the set of all cell labels occurring in
-#'  `data[[neighborhood_column_name]]`).
+#'  `data[[neighborhood_column_name]]`).}
+#' \item{`neighborhood_to_long_data()`}{a `tibble` with three columns: _name_, _cell_, and
+#'  _inside_.}
+#'
+#'
 #'
 #' @export
 neighborhoods_to_matrix <- function(data, fit = NULL, cell_names = NULL,
