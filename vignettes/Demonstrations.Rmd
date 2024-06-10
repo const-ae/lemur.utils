@@ -1,0 +1,39 @@
+---
+title: "Demonstrations"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Demonstrations}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(lemur.utils)
+library(lemur)
+```
+
+
+
+```{r, paged.print=FALSE}
+data(glioblastoma_example_data)
+fit <- lemur(glioblastoma_example_data, design = ~ patient_id + condition, n_emb = 5)
+fit <- align_harmony(fit)
+fit <- test_de(fit, contrast = cond(condition = "ctrl") - cond(condition = "panobinostat"))
+res <- find_de_neighborhoods(fit, group_by = vars(patient_id))
+
+head(res)
+```
+
+```{r}
+mat <- neighborhoods_to_matrix(res)
+mat[1:10, 1:10]
+```
+
+
