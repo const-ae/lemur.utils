@@ -70,7 +70,7 @@ neighborhoods_to_long_data <- function(data, fit = NULL, cell_names = NULL,
     res <- list(
       rep(gene_names, lengths(nei)),
       unlist(nei),
-      rep("inside", sum(lengths(nei)))
+      rep(TRUE, sum(lengths(nei)))
     )
   }else{
     cell_names <- get_cell_names(nei, fit, cell_names)
@@ -80,11 +80,11 @@ neighborhoods_to_long_data <- function(data, fit = NULL, cell_names = NULL,
     res <- list(
       rep(gene_names, each = length(cell_names)),
       rep(cell_names, times = length(gene_names)),
-      rep("outside", length(cell_names) * length(gene_names))
+      rep(FALSE, length(cell_names) * length(gene_names))
     )
     offset <- 0
     for(n in nei){
-      res[[3]][offset + levels2idx[n]] <- "inside"
+      res[[3]][offset + levels2idx[n]] <- TRUE
       offset <- offset + length(cell_names)
     }
   }

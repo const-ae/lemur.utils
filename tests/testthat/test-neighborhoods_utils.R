@@ -22,11 +22,11 @@ test_that("conversion to long data", {
   expect_equal(nrow(df), 10 * 100)
   expect_equal(colnames(df), c("name", "cell", "inside"))
 
-  nei_count <- summarize(df, n = sum(inside == "inside"), .by = name)$n
+  nei_count <- summarize(df, n = sum(inside), .by = name)$n
   expect_equal(nei_count, lengths(nei$neighborhood))
   inside_cells <- df |>
     mutate(name = as.factor(name)) |>
-    dplyr::filter(inside == "inside") |>
+    dplyr::filter(inside) |>
     summarize(nei = list(cell), .by = name) |>
     tidyr::complete(name, fill = list(nei = list(character(0L))))
   for(na in unique(nei$name)){
@@ -37,10 +37,14 @@ test_that("conversion to long data", {
     mutate(name = factor(name, paste0("gene_", 1:10)),
            cell = factor(cell, paste0("cell_", 1:100))) |>
     arrange(name, cell) |>
-    mutate(inside = (inside == "inside") * 1.0) |>
+    mutate(inside = inside * 1.0) |>
     pivot_wider(id_cols = name, names_from = cell, values_from = "inside") |>
     column_to_rownames("name") |>
     as.matrix()
   expect_equal(manual_mat, neighborhoods_to_matrix(nei, cell_names = paste0("cell_", 1:100),
                                                    verbose = FALSE, return_sparse = FALSE))
+
+  df_filtered <- neighborhoods_to_long_data(nei, only_keep_inside = TRUE, verbose = FALSE)
+  df_filtered_manual <- df |> filter(inside)
+  expect_equal(arrange(df_filtered, name, cell), arrange(df_filtered_manual, name, cell))
 })
