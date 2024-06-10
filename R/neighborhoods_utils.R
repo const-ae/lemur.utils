@@ -17,6 +17,7 @@ neighborhoods_intersect <- function(){
 #'   dense matrix is returned.
 #' @param only_keep_inside return the data after filtering out the cell
 #'   outside the neighborhood for each gene.
+#' @param as_factor convert `name` and `cell` columns to factors.
 #' @param verbose indicator if additional messages are printed.
 #'
 #' @returns \describe{
@@ -60,11 +61,13 @@ neighborhoods_to_long_data <- function(data, fit = NULL, cell_names = NULL,
                                       neighborhood_column_name = "neighborhood",
                                       id_column_name = "name",
                                       only_keep_inside = FALSE,
+                                      as_factor = TRUE,
                                       verbose = TRUE){
 
   tmp <- get_neigbhoods_and_names_from_df(data, neighborhood_column_name, id_column_name)
   nei <- tmp$neighborhoods
   gene_names <- tmp$names
+  cell_names <- get_cell_names(nei, fit, cell_names)
 
   if(only_keep_inside){
     res <- list(
@@ -73,7 +76,6 @@ neighborhoods_to_long_data <- function(data, fit = NULL, cell_names = NULL,
       rep(TRUE, sum(lengths(nei)))
     )
   }else{
-    cell_names <- get_cell_names(nei, fit, cell_names)
     levels2idx <- seq_along(cell_names)
     names(levels2idx) <- cell_names
 
@@ -89,6 +91,10 @@ neighborhoods_to_long_data <- function(data, fit = NULL, cell_names = NULL,
     }
   }
   names(res) <- c("name", "cell", "inside")
+  if(as_factor){
+    res[["name"]] <- factor(res[["name"]], levels = gene_names)
+    res[["cell"]] <- factor(res[["cell"]], levels = cell_names)
+  }
   tibble::as_tibble(res)
 }
 

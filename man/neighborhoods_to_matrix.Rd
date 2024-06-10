@@ -22,6 +22,7 @@ neighborhoods_to_long_data(
   neighborhood_column_name = "neighborhood",
   id_column_name = "name",
   only_keep_inside = FALSE,
+  as_factor = TRUE,
   verbose = TRUE
 )
 }
@@ -44,6 +45,8 @@ dense matrix is returned.}
 
 \item{only_keep_inside}{return the data after filtering out the cell
 outside the neighborhood for each gene.}
+
+\item{as_factor}{convert \code{name} and \code{cell} columns to factors.}
 }
 \value{
 \describe{
