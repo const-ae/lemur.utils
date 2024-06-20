@@ -142,6 +142,7 @@ neighborhoods_to_matrix <- function(data, fit = NULL, cell_names = NULL,
 }
 
 #' @rdname neighborhoods_to_matrix
+#' @export
 neighborhoods_to_long_data <- function(data, fit = NULL, cell_names = NULL,
                                       neighborhood_column_name = "neighborhood",
                                       id_column_name = "name",
