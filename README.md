@@ -38,6 +38,10 @@ Convert the neighborhood column from the output of
 Convert the neighborhood column from the output of
 `lemur::find_de_neighborhoods` to a 0/1 matrix.
 
+#### `count_labels_per_neighborhood()`
+
+Count the occurrences of a cell label per neighborhood.
+
 ### Projection onto a reference dataset
 
 #### `transfer_col_data`
