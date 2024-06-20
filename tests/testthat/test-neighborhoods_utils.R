@@ -22,7 +22,7 @@ test_that("conversion to long data", {
   expect_equal(nrow(df), 10 * 100)
   expect_equal(colnames(df), c("name", "cell", "inside"))
 
-  nei_count <- summarize(df, n = sum(inside), .by = name)$n
+  nei_count <- dplyr::summarize(df, n = sum(inside), .by = name)$n
   expect_equal(nei_count, lengths(nei$neighborhood))
   inside_cells <- df |>
     mutate(name = as.factor(name)) |>
