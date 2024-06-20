@@ -1,3 +1,8 @@
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(tibble)
+
 test_that("conversion to matrix works", {
   nei <- make_dummy_neighborhoods_data.frame()
   mat <- neighborhoods_to_matrix(nei, verbose = FALSE)
@@ -18,17 +23,17 @@ test_that("conversion to matrix works", {
 test_that("conversion to long data", {
   nei <- make_dummy_neighborhoods_data.frame()
   df <- neighborhoods_to_long_data(nei, only_keep_inside = FALSE, verbose = FALSE)
-  expect_true(tibble::is_tibble(df))
+  expect_true(is_tibble(df))
   expect_equal(nrow(df), 10 * 100)
   expect_equal(colnames(df), c("name", "cell", "inside"))
 
-  nei_count <- dplyr::summarize(df, n = sum(inside), .by = name)$n
+  nei_count <- summarize(df, n = sum(inside), .by = name)$n
   expect_equal(nei_count, lengths(nei$neighborhood))
   inside_cells <- df |>
     mutate(name = as.factor(name)) |>
-    dplyr::filter(inside) |>
+    filter(inside) |>
     summarize(nei = list(cell), .by = name) |>
-    tidyr::complete(name, fill = list(nei = list(character(0L))))
+    complete(name, fill = list(nei = list(character(0L))))
   for(na in unique(nei$name)){
     expect_setequal(filter(inside_cells, name == na)$nei[[1]], filter(nei, name == na)$neighborhood[[1]])
   }
