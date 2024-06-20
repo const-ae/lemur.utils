@@ -1,6 +1,91 @@
 
-neighborhoods_intersect <- function(){
 
+#' Tabulate a label per neighborhood
+#'
+#' @inheritParams neighborhoods_to_matrix
+#' @param label a vector with a label for each cell. It can also be a quoted
+#'   column name from `colData(fit)` (e.g., `vars(cell_type)`).
+#' @param return specification what format the data should be returned in.
+#'
+#'
+#' @export
+aggregate_labels_per_neighborhood <- function(data, labels, fit = NULL, cell_names = NULL,
+                                              neighborhood_column_name = "neighborhood",
+                                              id_column_name = "name",
+                                              return = c("tidy", "matrix", "sparse_matrix")){
+  tmp <- get_neigbhoods_and_names_from_df(data, neighborhood_column_name, id_column_name)
+  neighborhoods <- tmp$neighborhoods
+  gene_names <- tmp$names
+  cell_names <- get_cell_names(neighborhoods, fit, cell_names)
+  stopifnot(vctrs::obj_is_vector(labels))
+  return <- rlang::arg_match(return)
+
+  if(! is.list(neighborhoods)){
+    stop("'neighborhoods' must be a list where each element is a vector with cell IDs", call. = FALSE)
+  }
+  if(rlang::is_quosures(labels)){
+    col_data <- if(is.null(fit)){
+      NULL
+    }else{
+      as.data.frame(SummarizedExperiment::colData(fit))
+    }
+    label_names <- purrr::map_chr(labels, rlang::as_label)
+    labels <- lapply(labels, rlang::eval_tidy, data = col_data)
+    labels <- if(length(labels) == 1){
+      labels[[1]]
+    }else{
+      names(labels) <- label_names
+      tibble::as_tibble(labels)
+    }
+  }
+
+  index_lookup <- is.numeric(vctrs::vec_ptype(neighborhoods[[1]]))
+  if(! index_lookup && is.null(cell_names)){
+    stop("The neighborhoods contain cell IDs, thus a mapping between cell_id and `labels` is required.", call. = FALSE)
+  }else if(! index_lookup && length(cell_names) != vctrs::vec_size(labels)){
+    stop("The length of 'labels' and 'cell_names' must match.", call. = FALSE)
+  }else if(! index_lookup && length(cell_names) != length(unique(cell_names))){
+    stop("The elements in cell_names must be distinct.", call. = FALSE)
+  }
+
+  label_ids <- vctrs::vec_group_id(labels)
+  n_distinct_ids <- attr(label_ids, "n")
+  keys <- vctrs::vec_group_loc(labels)$key
+  counts <- if(index_lookup){
+    lemur:::mply_dbl(neighborhoods, \(nei){
+      if(any(nei <= 0 | nei > vctrs::vec_size(labels))){
+        stop("The neighborhood contains an index (", nei[any(nei <= 0 | nei > vctrs::vec_size(labels))][1], ") ",
+             "which is outside the bounds of `labels` (1-", vctrs::vec_size(labels), ")", call. = FALSE)
+      }
+      tabulate(label_ids[nei], n_distinct_ids)
+    }, ncol = n_distinct_ids)
+  }else{
+    lemur:::mply_dbl(neighborhoods, \(nei){
+      nei_idx <- vctrs::vec_match(nei, cell_names)
+      tabulate(label_ids[nei_idx], n_distinct_ids)
+    }, ncol = n_distinct_ids)
+  }
+
+
+  if(return == "tidy"){
+    tibble(name = vctrs::vec_rep_each(gene_names, ncol(counts)),
+           label = vctrs::vec_rep(keys, nrow(counts)),
+           counts = c(t(counts)))
+  }else{
+    if(return == "sparse_matrix"){
+      counts <- as(counts, "dgCMatrix")
+    }
+    if(! is.list(keys) && !is.data.frame(keys)){
+      col_names <- map_chr(seq_len(vctrs::vec_size(keys)), \(idx){
+        format(vctrs::vec_slice(keys, idx))
+      })
+      colnames(counts) <- keys
+    }else{
+      warning("'keys' is a complex object which cannot be converted to column names. Please use 'return=\"tidy\"")
+      colnames(counts) <- paste0("V", seq_len(n_distinct_ids))
+    }
+    counts
+  }
 }
 
 
