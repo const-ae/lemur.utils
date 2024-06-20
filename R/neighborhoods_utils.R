@@ -1,6 +1,6 @@
 
 
-#' Tabulate a label per neighborhood
+#' Count the occurrences of a cell label per neighborhood
 #'
 #' @inheritParams neighborhoods_to_matrix
 #' @param label a vector with a label for each cell. It can also be a quoted
@@ -9,7 +9,7 @@
 #'
 #'
 #' @export
-aggregate_labels_per_neighborhood <- function(data, labels, fit = NULL, cell_names = NULL,
+count_labels_per_neighborhood <- function(data, labels, fit = NULL, cell_names = NULL,
                                               neighborhood_column_name = "neighborhood",
                                               id_column_name = "name",
                                               return = c("tidy", "matrix", "sparse_matrix")){
