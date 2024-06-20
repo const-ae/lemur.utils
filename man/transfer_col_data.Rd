@@ -19,8 +19,8 @@ transfer_col_data(
 
 \item{query}{a matrix or \code{SummarizedExperiment} that will be annotated}
 
-\item{columns}{the quoted column names from \code{cbind(colData(ref), col_data)}
-that will be transferred}
+\item{columns}{the quoted column names (e.g., \code{vars(class, subclass)}) from
+\code{cbind(colData(ref), col_data)} that will be transferred.}
 
 \item{k}{the number of nearest neighbors to consider}
 
@@ -28,6 +28,9 @@ that will be transferred}
 \code{ref} and \code{query}. Only applies if they are \code{SummarizedExperiment}.}
 
 \item{col_data}{additional column annotation for \code{ref}. Default: \code{NULL}}
+}
+\value{
+a tibble with columns specified by the \code{columns} argument
 }
 \description{
 This function finds the \code{k} nearest neighbors from the reference for each observation in the query

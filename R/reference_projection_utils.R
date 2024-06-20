@@ -18,14 +18,14 @@ glmGamPoi::vars
 #'
 #' @param ref a matrix or `SummarizedExperiment` with existing annotation
 #' @param query a matrix or `SummarizedExperiment` that will be annotated
-#' @param columns the quoted column names from `cbind(colData(ref), col_data)`
-#'   that will be transferred
+#' @param columns the quoted column names (e.g., `vars(class, subclass)`) from
+#'  `cbind(colData(ref), col_data)` that will be transferred.
 #' @param k the number of nearest neighbors to consider
 #' @param ref_reducedDim,query_reducedDim the names of the `reducedDim` to pick from
 #'   `ref` and `query`. Only applies if they are `SummarizedExperiment`.
 #' @param col_data additional column annotation for `ref`. Default: `NULL`
 #'
-#'
+#' @returns a tibble with columns specified by the `columns` argument
 #'
 #' @export
 transfer_col_data <- function(ref, query, columns, k = 20,
@@ -56,12 +56,13 @@ transfer_col_data <- function(ref, query, columns, k = 20,
   id_cols <- tibble::as_tibble(id_cols)
 
   ref_embedding <- if(is(ref, "SummarizedExperiment")){
-    reducedDim(ref, ref_reducedDim)
+    t(reducedDim(ref, ref_reducedDim))
   }else if(is.matrix(query)){
     ref
   }else{
     stop("'query' must either be a matrix or a `lemur_fit` object")
   }
+  stopifnot(nrow(ref_embedding) == nrow(query_embedding))
 
   index <- BiocNeighbors::buildAnnoy(ref_embedding, transposed = TRUE)
   lookup <- BiocNeighbors::queryAnnoy(precomputed = index, query = query_embedding, transposed = TRUE,
