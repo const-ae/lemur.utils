@@ -31,8 +31,6 @@ glmGamPoi::vars
 transfer_col_data <- function(ref, query, columns, k = 20,
                            ref_reducedDim = "embedding", query_reducedDim = "embedding",
                            col_data = NULL){
-  stopifnot(nrow(ref) == nrow(query))
-
   query_embedding <- if(is(query, "SummarizedExperiment")){
     t(reducedDim(query, query_reducedDim))
   }else if(is.matrix(query)){
@@ -75,7 +73,6 @@ transfer_col_data <- function(ref, query, columns, k = 20,
   })
   keys[transferred_ids,]
 }
-
 
 
 `%str_or%` <- function(x, y){
