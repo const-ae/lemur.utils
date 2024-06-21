@@ -11,6 +11,8 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+
+options(max.print=10)
 ```
 
 # lemur.utils
@@ -35,22 +37,80 @@ This package is in an very early stage of development and the API is not conside
 
 # Documentation
 
+I will demonstrate the functions using the data by Kang et al. (2018).
+
+```{r, message=FALSE, paged.print=FALSE}
+library(lemur)
+library(lemur.utils)
+library(SingleCellExperiment)
+library(tidyverse)
+# Prepare the data
+sce <- muscData::Kang18_8vs8()
+logcounts(sce) <- transformGamPoi::shifted_log_transform(sce)
+hvg <- order(-rowVars(logcounts(sce)))
+sce <- sce[hvg[1:500],]
+
+fit <- lemur(sce, design = ~ stim, n_embedding = 10, verbose = FALSE)
+fit <- align_harmony(fit)
+fit <- test_de(fit, contrast = cond(stim = "stim") - cond(stim = "ctrl"))
+nei <- find_de_neighborhoods(fit, group_by = vars(ind))
+
+as_tibble(nei)
+```
+
+
 ### Neighborhood helpers
 
-#### `neighborhood_to_long_data()`
+#### `neighborhoods_to_long_data()`
 
 Convert the neighborhood column from the output of `lemur::find_de_neighborhoods` to a tidy tibble.
+
+```{r, paged.print=FALSE}
+# By default the long data contains all gene / cell combinations
+neighborhoods_to_long_data(nei, fit = fit)
+# `only_keep_inside` filters out `inside == FALSE` and produces a smaller tibble
+neighborhoods_to_long_data(nei, fit = fit, only_keep_inside = TRUE)
+```
+
 
 #### `neighborhoods_to_matrix()`
 
 Convert the neighborhood column from the output of `lemur::find_de_neighborhoods` to a 0/1 matrix. 
 
+```{r, paged.print=FALSE}
+neighborhoods_to_matrix(nei, fit = fit)
+```
+
 #### `count_labels_per_neighborhood()`
 
 Count the occurrences of a cell label per neighborhood.
+
+```{r, paged.print=FALSE}
+count_labels_per_neighborhood(nei, labels = vars(cell), fit = fit)
+```
+
 
 ### Projection onto a reference dataset
 
 #### `transfer_col_data`
 
-After integrating a query and a reference dataset, transfer the annotation from the reference data to the query data.
+After integrating a query and a reference dataset, transfer the annotation from the reference data to the query data. 
+The `ref` and `query` data must contain a shared embedding, produced by manually integrating them with Seurat, harmony, or LEMUR.
+
+```{r, paged.print=FALSE}
+# This is a completely simulated example to demonstrate how to call the `transfer_col_data` function
+ref_sce <- SingleCellExperiment(list(logcounts = matrix(1, nrow = 400, ncol = 300)),
+                                colData = DataFrame(celltype = sample(c("A", "B", "C"), size = 300, replace = TRUE),
+                                                    origin = sample(c("foo", "bar"), size = 300, replace = TRUE)),
+                                reducedDims = list(embedding = t(matrix(rnorm(10 * 300), nrow = 10, ncol = 300))))
+
+transfer_col_data(ref_sce, fit, columns = vars(celltype, origin))
+```
+
+
+# Session Info
+
+```{r}
+sessionInfo()
+```
+
