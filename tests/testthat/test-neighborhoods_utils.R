@@ -5,16 +5,16 @@ library(tibble)
 
 
 test_that("label counting per neighborhood works", {
-
   nei <- tibble(name = paste0("gene_", 1:3), neighborhood = list(c(1,2,3,3), c(2), c(4,4,4,4)))
   labels <- rep(letters[1:2], times = 5)
   tidy_res1 <- count_labels_per_neighborhood(nei, labels, return = "tidy")
   mat_res <- count_labels_per_neighborhood(nei, labels, return = "matrix")
   expect_equal(tidy_res1, tibble(name = c("gene_1", "gene_1", "gene_2", "gene_2", "gene_3", "gene_3"),
                                 label = c("a", "b", "a", "b", "a", "b"),
-                                counts = c(3, 1, 0, 1, 0, 4)))
+                                counts = c(3, 1, 0, 1, 0, 4),
+                                total_counts = 5))
   expect_equal(colnames(mat_res), c("a", "b"))
-  expect_equal(mat_res, matrix(c(3,0,0,1,1,4), ncol = 2), ignore_attr = "dimnames")
+  expect_equal(mat_res, matrix(c(3,0,0,1,1,4), ncol = 2), ignore_attr = c("dimnames", "total_counts"))
 
   labels <- tibble(a = rep(letters[1:2], times = 5), b = "hello")
   tidy_res2 <- count_labels_per_neighborhood(nei, labels, return = "tidy")
@@ -42,7 +42,7 @@ test_that("label counting per neighborhood works", {
   expect_warning(
     mat_res3 <- count_labels_per_neighborhood(nei, vars(a, test = "123"), fit = sce, return = "matrix")
   )
-  expect_equal(mat_res2, mat_res3, ignore_attr = "dimnames")
+  expect_equal(mat_res2, mat_res3, ignore_attr = c("dimnames", "names"))
 })
 
 test_that("conversion to matrix works", {
