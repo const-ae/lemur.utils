@@ -5,14 +5,18 @@
 #' @inheritParams neighborhoods_to_matrix
 #' @param label a vector with a label for each cell. It can also be a quoted
 #'   column name from `colData(fit)` (e.g., `vars(cell_type)`).
+#' @param add_total flag indicating if the total counts per label are returned.
+#'   If `TRUE` and `return="tidy`, an additional column is added; otherwise,
+#'   an attribute called "total_counts" is added to matrix output.
 #' @param return specification what format the data should be returned in.
 #'
 #'
 #' @export
 count_labels_per_neighborhood <- function(data, labels, fit = NULL, cell_names = NULL,
-                                              neighborhood_column_name = "neighborhood",
-                                              id_column_name = "name",
-                                              return = c("tidy", "matrix", "sparse_matrix")){
+                                          neighborhood_column_name = "neighborhood",
+                                          id_column_name = "name",
+                                          add_total = TRUE,
+                                          return = c("tidy", "matrix", "sparse_matrix")){
   tmp <- get_neigbhoods_and_names_from_df(data, neighborhood_column_name, id_column_name)
   neighborhoods <- tmp$neighborhoods
   gene_names <- tmp$names
@@ -67,10 +71,15 @@ count_labels_per_neighborhood <- function(data, labels, fit = NULL, cell_names =
   }
 
 
+  tc <- tabulate(label_ids, n_distinct_ids)
   if(return == "tidy"){
-    tibble(name = vctrs::vec_rep_each(gene_names, ncol(counts)),
+    res <- tibble(name = vctrs::vec_rep_each(gene_names, ncol(counts)),
            label = vctrs::vec_rep(keys, nrow(counts)),
            counts = c(t(counts)))
+    if(add_total){
+      res$total_counts <- vctrs::vec_rep(tc, nrow(counts))
+    }
+    res
   }else{
     if(return == "sparse_matrix"){
       counts <- as(counts, "dgCMatrix")
@@ -83,6 +92,10 @@ count_labels_per_neighborhood <- function(data, labels, fit = NULL, cell_names =
     }else{
       warning("'keys' is a complex object which cannot be converted to column names. Please use 'return=\"tidy\"")
       colnames(counts) <- paste0("V", seq_len(n_distinct_ids))
+    }
+    if(add_total){
+      names(tc) <- colnames(counts)
+      attr(counts, "total_counts") <- tc
     }
     counts
   }
