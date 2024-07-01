@@ -44,6 +44,8 @@ library(lemur)
 library(lemur.utils)
 library(SingleCellExperiment)
 library(tidyverse)
+set.seed(1)
+
 # Prepare the data
 sce <- muscData::Kang18_8vs8()
 logcounts(sce) <- transformGamPoi::shifted_log_transform(sce)
@@ -89,6 +91,28 @@ Count the occurrences of a cell label per neighborhood.
 count_labels_per_neighborhood(nei, labels = vars(cell), fit = fit)
 ```
 
+### Make tidy
+
+#### `fit_pivot_longer`
+
+The `fit_pivot_longer` works on the `lemur_fit` objects. For `SingleCellExperiment` objects use the `sce_pivot_longer` function, which works analogously but has slightly different defaults.
+
+```{r, paged.print=FALSE}
+# Select genes by name
+fit_pivot_longer(fit, genes = "FTH1")
+
+# Select genes by index
+fit_pivot_longer(fit, genes = 1:3)
+
+# Select genes with filter statement wrapped in `vars`
+fit_pivot_longer(fit, genes = vars(str_starts(SYMBOL, "HSP")))
+
+# Select cells by cell type and condition
+fit_pivot_longer(fit, genes = 1:10, cells = vars(cell == "CD 4 T cells" | stim == "ctrl"))
+```
+
+
+
 ### Plotting helpers
 
 #### `scale_color_de` / `scale_fill_de`
@@ -99,6 +123,7 @@ fit_pivot_longer(fit, genes = 1, assays = "DE", reduced_dims = "embedding") %>%
     geom_point(aes(color = DE)) +
     scale_color_de(qlimits = 0.1)
 ```
+
 
 ### Projection onto a reference dataset
 
@@ -116,6 +141,9 @@ ref_sce <- SingleCellExperiment(list(logcounts = matrix(1, nrow = 400, ncol = 30
 
 transfer_col_data(ref_sce, fit, columns = vars(celltype, origin))
 ```
+
+
+
 
 
 # Session Info
