@@ -89,6 +89,16 @@ Count the occurrences of a cell label per neighborhood.
 count_labels_per_neighborhood(nei, labels = vars(cell), fit = fit)
 ```
 
+### Plotting helpers
+
+#### `scale_color_de` / `scale_fill_de`
+
+```{r, paged.print=FALSE}
+fit_pivot_longer(fit, genes = 1, assays = "DE", reduced_dims = "embedding") %>%
+  ggplot(aes(x = embedding[,1], y = embedding[,2])) +
+    geom_point(aes(color = DE)) +
+    scale_color_de(qlimits = 0.1)
+```
 
 ### Projection onto a reference dataset
 
