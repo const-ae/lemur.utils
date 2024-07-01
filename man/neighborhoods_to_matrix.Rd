@@ -56,6 +56,8 @@ occurring in \code{data[[neighborhood_column_name]]}).}
 \item{\code{neighborhood_to_long_data()}}{a \code{tibble} with three columns: \emph{name}, \emph{cell},
 and \emph{inside}.}
 }
+}
 \description{
-Convert neighborhood column to other format
+This function converts the output of \code{\link[lemur:find_de_neighborhoods]{lemur::find_de_neighborhoods()}}
+to a format that can be more convenient.
 }

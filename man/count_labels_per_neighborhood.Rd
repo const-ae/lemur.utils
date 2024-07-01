@@ -18,6 +18,9 @@ count_labels_per_neighborhood(
 \arguments{
 \item{data}{the output of \code{lemur::find_de_neighborhoods}}
 
+\item{labels}{a vector with a label for each cell. It can also be a quoted
+column name from \code{colData(fit)} (e.g., \code{vars(cell_type)}).}
+
 \item{fit}{the \code{lemur_fit} object (optional). The column names of fit are used
 as the set of possible values in the neighborhood columns.}
 
@@ -32,9 +35,6 @@ If \code{TRUE} and \verb{return="tidy}, an additional column is added; otherwise
 an attribute called "total_counts" is added to matrix output.}
 
 \item{return}{specification what format the data should be returned in.}
-
-\item{label}{a vector with a label for each cell. It can also be a quoted
-column name from \code{colData(fit)} (e.g., \code{vars(cell_type)}).}
 }
 \description{
 Count the occurrences of a cell label per neighborhood

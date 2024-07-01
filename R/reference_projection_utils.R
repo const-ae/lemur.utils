@@ -32,7 +32,7 @@ transfer_col_data <- function(ref, query, columns, k = 20,
                            ref_reducedDim = "embedding", query_reducedDim = "embedding",
                            col_data = NULL){
   query_embedding <- if(is(query, "SummarizedExperiment")){
-    t(reducedDim(query, query_reducedDim))
+    t(SingleCellExperiment::reducedDim(query, query_reducedDim))
   }else if(is.matrix(query)){
     query
   }else{
@@ -54,7 +54,7 @@ transfer_col_data <- function(ref, query, columns, k = 20,
   id_cols <- tibble::as_tibble(id_cols)
 
   ref_embedding <- if(is(ref, "SummarizedExperiment")){
-    t(reducedDim(ref, ref_reducedDim))
+    t(SingleCellExperiment::reducedDim(ref, ref_reducedDim))
   }else if(is.matrix(query)){
     ref
   }else{

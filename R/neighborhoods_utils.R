@@ -3,7 +3,7 @@
 #' Count the occurrences of a cell label per neighborhood
 #'
 #' @inheritParams neighborhoods_to_matrix
-#' @param label a vector with a label for each cell. It can also be a quoted
+#' @param labels a vector with a label for each cell. It can also be a quoted
 #'   column name from `colData(fit)` (e.g., `vars(cell_type)`).
 #' @param add_total flag indicating if the total counts per label are returned.
 #'   If `TRUE` and `return="tidy`, an additional column is added; otherwise,
@@ -73,7 +73,7 @@ count_labels_per_neighborhood <- function(data, labels, fit = NULL, cell_names =
 
   tc <- tabulate(label_ids, n_distinct_ids)
   if(return == "tidy"){
-    res <- tibble(name = vctrs::vec_rep_each(gene_names, ncol(counts)),
+    res <- tibble::tibble(name = vctrs::vec_rep_each(gene_names, ncol(counts)),
            label = vctrs::vec_rep(keys, nrow(counts)),
            counts = c(t(counts)))
     if(add_total){
@@ -85,7 +85,7 @@ count_labels_per_neighborhood <- function(data, labels, fit = NULL, cell_names =
       counts <- as(counts, "dgCMatrix")
     }
     if(! is.list(keys) && !is.data.frame(keys)){
-      col_names <- map_chr(seq_len(vctrs::vec_size(keys)), \(idx){
+      col_names <- purrr::map_chr(seq_len(vctrs::vec_size(keys)), \(idx){
         format(vctrs::vec_slice(keys, idx))
       })
       colnames(counts) <- keys
@@ -104,6 +104,9 @@ count_labels_per_neighborhood <- function(data, labels, fit = NULL, cell_names =
 
 #' Convert neighborhood column to other format
 #'
+#' This function converts the output of [`lemur::find_de_neighborhoods()`]
+#' to a format that can be more convenient.
+#'
 #' @param data the output of `lemur::find_de_neighborhoods`
 #' @param fit the `lemur_fit` object (optional). The column names of fit are used
 #'   as the set of possible values in the neighborhood columns.
@@ -118,12 +121,14 @@ count_labels_per_neighborhood <- function(data, labels, fit = NULL, cell_names =
 #' @param as_factor convert `name` and `cell` columns to factors.
 #' @param verbose indicator if additional messages are printed.
 #'
-#' @returns \describe{
+#' @returns
+#' \describe{
 #' \item{`neighborhoods_to_matrix()`}{a (sparse) matrix with `length(data[[neighborhood_column_name]])`
 #'  rows and one column for each element of `cell_names` (or the set of all cell labels
 #'  occurring in `data[[neighborhood_column_name]]`).}
 #' \item{`neighborhood_to_long_data()`}{a `tibble` with three columns: _name_, _cell_,
 #'  and _inside_.}
+#' }
 #'
 #'
 #'
