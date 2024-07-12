@@ -11,7 +11,8 @@
 #' @param genes a selection of rows (i.e., genes) from `fit`. It can either
 #'   be an index vector, a character vector with `rownames` or a
 #'   `dplyr::filter`-like expression wrapped in `vars()` that can refer
-#'   to columns of the `rowData(fit)`.
+#'   to columns of the `rowData(fit)`. Default: `NULL` which means no genes
+#'   are included.
 #' @param cells a selection of columns (i.e., cells) from `fit`. It can either
 #'   be an index vector, a character vector with `colnames` or a
 #'   `dplyr::filter`-like expression wrapped in `vars` that can refer to
@@ -34,7 +35,7 @@
 #'
 #' @export
 sce_pivot_longer <- function(sce,
-                 genes,
+                 genes = NULL,
                  cells = NULL,
                  assays = 1,
                  reduced_dims = NULL,
@@ -50,9 +51,12 @@ sce_pivot_longer <- function(sce,
   }
   col_selection <- lemur:::convert_subset_to_index(col_selection, colnames(sce))
 
+  skip_genes <- is.null(genes)
   row_data <- tibble::as_tibble(SummarizedExperiment::rowData(sce))
   row_selection <- if(rlang::is_quosures(genes)){
     evaluate_quosures_to_lgl(genes, row_data, size = nrow(sce))
+  }else if(is.null(genes)){
+    rep(FALSE, nrow(sce))
   }else{
     genes
   }
@@ -103,14 +107,22 @@ sce_pivot_longer <- function(sce,
     tibble::tibble({{rownames}} := rownames(sce))
   }
 
-  dplyr::bind_cols(
-    vctrs::vec_rep_each(colnames_df[col_selection,], nrows),
-    vctrs::vec_rep_each(col_data[col_selection,], nrows),
-    vctrs::vec_rep_each(reduced_dim_df, nrows),
-    vctrs::vec_rep(rownames_df[row_selection,], times = ncols),
-    vctrs::vec_rep(row_data[row_selection,], times = ncols),
-    tibble::as_tibble(assay_df)
-  )
+  if(skip_genes){
+    dplyr::bind_cols(
+      colnames_df[col_selection,],
+      col_data[col_selection,],
+      reduced_dim_df
+    )
+  }else{
+    dplyr::bind_cols(
+      vctrs::vec_rep_each(colnames_df[col_selection,], nrows),
+      vctrs::vec_rep_each(col_data[col_selection,], nrows),
+      vctrs::vec_rep_each(reduced_dim_df, nrows),
+      vctrs::vec_rep(rownames_df[row_selection,], times = ncols),
+      vctrs::vec_rep(row_data[row_selection,], times = ncols),
+      tibble::as_tibble(assay_df)
+    )
+  }
 
 }
 

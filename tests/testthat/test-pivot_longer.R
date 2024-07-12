@@ -12,6 +12,10 @@ test_that("sce_pivot_longer works", {
 
   sce <- SingleCellExperiment::SingleCellExperiment(list(counts = mat, logcounts = log1p(mat)),
                                                     colData = col_data, rowData = row_data)
+  tidy_df <- sce_pivot_longer(sce)
+  expect_equal(colnames(tidy_df), c("type", "cond"))
+  expect_equal(nrow(tidy_df), n_cells)
+
   tidy_df <- sce_pivot_longer(sce, genes = 1)
   expect_equal(colnames(tidy_df), c("type", "cond", "symbol", "gene_id", "counts"))
   expect_equal(tidy_df$counts, mat[1,], ignore_attr = "names")

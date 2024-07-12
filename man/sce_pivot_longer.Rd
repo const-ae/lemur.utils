@@ -7,7 +7,7 @@
 \usage{
 sce_pivot_longer(
   sce,
-  genes,
+  genes = NULL,
   cells = NULL,
   assays = 1,
   reduced_dims = NULL,
@@ -29,7 +29,8 @@ fit_pivot_longer(
 \item{genes}{a selection of rows (i.e., genes) from \code{fit}. It can either
 be an index vector, a character vector with \code{rownames} or a
 \code{dplyr::filter}-like expression wrapped in \code{vars()} that can refer
-to columns of the \code{rowData(fit)}.}
+to columns of the \code{rowData(fit)}. Default: \code{NULL} which means no genes
+are included.}
 
 \item{cells}{a selection of columns (i.e., cells) from \code{fit}. It can either
 be an index vector, a character vector with \code{colnames} or a
