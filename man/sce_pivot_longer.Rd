@@ -17,10 +17,12 @@ sce_pivot_longer(
 
 fit_pivot_longer(
   fit,
-  genes,
+  genes = NULL,
   cells = NULL,
   assays = fit$use_assay,
-  reduced_dims = "embedding"
+  reduced_dims = "embedding",
+  rownames = NULL,
+  colnames = NULL
 )
 }
 \arguments{
@@ -45,12 +47,18 @@ values are included in the output. To see all options run \code{assayNames(fit)}
 which are included as \code{matrix} columns in the output. To see all options
 run \code{reducedDimNames(fit)}.}
 
+\item{rownames, colnames}{string that specifies the column name for
+for the \code{rownames(sce)} and \code{colnames(sce)} respectively. Default:
+\code{NULL} which means no extra columns are included}
+
 \item{fit}{the \code{lemur_fit} produced by \code{lemur()}}
 }
 \value{
 a \code{tibble} with the content from
 \itemize{
+\item \code{colnames(fit)} if \code{colnames} is not \code{NULL},
 \item \code{colData(fit)} subset according to \code{cells},
+\item \code{rownames(fit)} if \code{rownames} is not \code{NULL},
 \item \code{rowData(fit)}subset according to \code{genes},
 \item one numeric column per entry in \code{assays}.
 \item one matrix-column per entry in \code{reducedDims}.

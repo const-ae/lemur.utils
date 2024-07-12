@@ -23,10 +23,15 @@
 #' @param reduced_dims a character with the names of the `reducedDim(fit)`
 #'  which are included as `matrix` columns in the output. To see all options
 #'  run `reducedDimNames(fit)`.
+#' @param rownames,colnames string that specifies the column name for
+#'  for the `rownames(sce)` and `colnames(sce)` respectively. Default:
+#'  `NULL` which means no extra columns are included
 #'
 #' @returns a `tibble` with the content from
 #'   \itemize{
+#'     \item `colnames(fit)` if `colnames` is not `NULL`,
 #'     \item `colData(fit)` subset according to `cells`,
+#'     \item `rownames(fit)` if `rownames` is not `NULL`,
 #'     \item `rowData(fit)`subset according to `genes`,
 #'     \item one numeric column per entry in `assays`.
 #'     \item one matrix-column per entry in `reducedDims`.
@@ -129,12 +134,15 @@ sce_pivot_longer <- function(sce,
 #' @rdname sce_pivot_longer
 #' @export
 fit_pivot_longer <- function(fit,
-                             genes,
+                             genes = NULL,
                              cells = NULL,
                              assays = fit$use_assay,
-                             reduced_dims = "embedding"){
+                             reduced_dims = "embedding",
+                             rownames = NULL,
+                             colnames = NULL){
   sce_pivot_longer(fit, genes = genes, cells = cells,
-                   assays = assays, reduced_dims = reduced_dims)
+                   assays = assays, reduced_dims = reduced_dims,
+                   rownames = rownames, colnames = colnames)
 }
 
 
