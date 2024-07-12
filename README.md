@@ -159,6 +159,10 @@ The `fit_pivot_longer` works on the `lemur_fit` objects. For
 `SingleCellExperiment` objects use the `sce_pivot_longer` function,
 which works analogously but has slightly different defaults.
 
+Be careful when using this function: the output tibble will have
+`n_genes * n_cells` rows, which for `n_genes = 1e4` and `n_cells = 1e4`
+produces a 100 million rows.
+
 ``` r
 # Select genes by name
 fit_pivot_longer(fit, genes = "FTH1")
