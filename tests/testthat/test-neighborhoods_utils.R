@@ -94,4 +94,14 @@ test_that("conversion to long data", {
   df_filtered <- neighborhoods_to_long_data(nei, only_keep_inside = TRUE, verbose = FALSE)
   df_filtered_manual <- df |> filter(inside)
   expect_equal(arrange(df_filtered, name, cell), arrange(df_filtered_manual, name, cell))
+
+  fit <- SingleCellExperiment::SingleCellExperiment(colData = data.frame(group = sample(letters[1:3], size = 100, replace = TRUE)))
+  expect_error(neighborhoods_to_long_data(nei, fit))
+  colnames(fit) <- paste0('cell_', 1:100)
+  expect_equal(neighborhoods_to_long_data(nei, fit),
+               neighborhoods_to_long_data(nei, cell_names = paste0('cell_', 1:100)))
+
+  nei$neighborhood <- lapply(nei$neighborhood, \(n) as.integer(factor(n, levels = paste0('cell_', 1:100))))
+  colnames(fit) <- NULL
+  neighborhoods_to_long_data(nei, fit)
 })

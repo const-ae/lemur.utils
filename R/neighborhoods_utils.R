@@ -209,7 +209,11 @@ get_cell_names <- function(neighborhoods, fit, cell_names){
   levels <- if(! is.null(cell_names)){
     cell_names
   }else if(! is.null(fit)){
-    colnames(fit)
+    if(is.null(colnames(fit))){
+      seq_len(ncol(fit))
+    }else{
+      colnames(fit)
+    }
   }else{
     all_cell_labels
   }
